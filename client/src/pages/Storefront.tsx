@@ -19,8 +19,9 @@ interface SiteSettings {
   aboutSubtitle: string;
   aboutLine1: string;
   aboutLine2: string;
-  statArtisanPartners: string;
-  statYearsOfCraft: string;
+  statPartners: string;
+  statOrders: string;
+  statHappyCustomers: string;
   instagramUrl: string;
   instagramHandle: string;
   facebookUrl: string;
@@ -41,8 +42,9 @@ const DEFAULT_SETTINGS: SiteSettings = {
   aboutSubtitle: "Crafted with Tradition",
   aboutLine1: "Rachita Uduppu was born from a deep love for India's textile heritage. Based in Davangere, Karnataka, every piece we create bridges centuries-old craft traditions and contemporary style.",
   aboutLine2: "From Banarasi silk sarees to modern cord sets, we work directly with artisans to bring you garments that are truly one-of-a-kind.",
-  statArtisanPartners: "50+",
-  statYearsOfCraft: "5+",
+  statPartners: "50+",
+  statOrders: "0",
+  statHappyCustomers: "0",
   instagramUrl: "https://instagram.com/rachitauduppu",
   instagramHandle: "@rachitauduppu",
   facebookUrl: "https://facebook.com/rachitauduppu",
@@ -257,8 +259,14 @@ export default function Storefront() {
             <p className="font-body text-muted-foreground mb-4 leading-relaxed">{settings.aboutLine1}</p>
             <p className="font-body text-muted-foreground leading-relaxed">{settings.aboutLine2}</p>
           </div>
-          <div className="grid grid-cols-2 gap-4">
-            {[{ label: "Products", value: `${activeProducts.length}+` }, { label: "Artisan Partners", value: settings.statArtisanPartners }, { label: "Collections", value: `${categories.length}` }, { label: "Years of Craft", value: settings.statYearsOfCraft }].map(({ label, value }) => (
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+            {[
+              { label: "Products", value: `${activeProducts.length}+` },
+              { label: "Collections", value: `${categories.length}` },
+              { label: "Partners", value: settings.statPartners },
+              { label: "Orders", value: settings.statOrders },
+              { label: "Happy Customers", value: settings.statHappyCustomers },
+            ].map(({ label, value }) => (
               <div key={label} className="bg-card rounded-xl p-6 text-center border border-border">
                 <p className="font-display text-4xl font-semibold" style={{ color: "hsl(355 72% 32%)" }}>{value}</p>
                 <p className="font-body text-sm text-muted-foreground mt-1">{label}</p>

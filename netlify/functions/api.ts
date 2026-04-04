@@ -95,8 +95,9 @@ interface SiteSettings {
   aboutLine1: string;
   aboutLine2: string;
   // Stats
-  statArtisanPartners: string;
-  statYearsOfCraft: string;
+  statPartners: string;
+  statOrders: string;
+  statHappyCustomers: string;
   // Social links
   instagramUrl: string;
   instagramHandle: string;
@@ -118,8 +119,9 @@ const DEFAULT_SETTINGS: SiteSettings = {
   aboutSubtitle: "Crafted with Tradition",
   aboutLine1: "Rachita Uduppu was born from a deep love for India's textile heritage. Based in Davangere, Karnataka, every piece we create bridges centuries-old craft traditions and contemporary style.",
   aboutLine2: "From Banarasi silk sarees to modern cord sets, we work directly with artisans to bring you garments that are truly one-of-a-kind.",
-  statArtisanPartners: "50+",
-  statYearsOfCraft: "5+",
+  statPartners: "50+",
+  statOrders: "0",
+  statHappyCustomers: "0",
   instagramUrl: "https://instagram.com/rachitauduppu",
   instagramHandle: "@rachitauduppu",
   facebookUrl: "https://facebook.com/rachitauduppu",

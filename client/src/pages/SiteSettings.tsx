@@ -23,8 +23,9 @@ export interface SiteSettings {
   aboutSubtitle: string;
   aboutLine1: string;
   aboutLine2: string;
-  statArtisanPartners: string;
-  statYearsOfCraft: string;
+  statPartners: string;
+  statOrders: string;
+  statHappyCustomers: string;
   instagramUrl: string;
   instagramHandle: string;
   facebookUrl: string;
@@ -45,8 +46,9 @@ const DEFAULT: SiteSettings = {
   aboutSubtitle: "Crafted with Tradition",
   aboutLine1: "Rachita Uduppu was born from a deep love for India's textile heritage. Based in Davangere, Karnataka, every piece we create bridges centuries-old craft traditions and contemporary style.",
   aboutLine2: "From Banarasi silk sarees to modern cord sets, we work directly with artisans to bring you garments that are truly one-of-a-kind.",
-  statArtisanPartners: "50+",
-  statYearsOfCraft: "5+",
+  statPartners: "50+",
+  statOrders: "0",
+  statHappyCustomers: "0",
   instagramUrl: "https://instagram.com/rachitauduppu",
   instagramHandle: "@rachitauduppu",
   facebookUrl: "https://facebook.com/rachitauduppu",
@@ -213,16 +215,20 @@ export default function SiteSettings() {
               <Star size={16} className="text-amber-500" /> Stats (About Section)
             </CardTitle>
             <CardDescription className="font-body text-xs">
-              The 4 number boxes. Products and Collections are counted automatically from your inventory.
+              The number boxes shown in the About section.
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
-              <Field label="Artisan Partners">
-                <Input value={form.statArtisanPartners} onChange={e => set("statArtisanPartners", e.target.value)} placeholder="50+" />
+            <p className="font-body text-xs text-muted-foreground -mt-1">Products and Collections are counted automatically from your inventory.</p>
+            <div className="grid grid-cols-3 gap-3">
+              <Field label="Partners">
+                <Input value={form.statPartners} onChange={e => set("statPartners", e.target.value)} placeholder="50+" />
               </Field>
-              <Field label="Years of Craft">
-                <Input value={form.statYearsOfCraft} onChange={e => set("statYearsOfCraft", e.target.value)} placeholder="5+" />
+              <Field label="Orders">
+                <Input value={form.statOrders} onChange={e => set("statOrders", e.target.value)} placeholder="100+" />
+              </Field>
+              <Field label="Happy Customers">
+                <Input value={form.statHappyCustomers} onChange={e => set("statHappyCustomers", e.target.value)} placeholder="200+" />
               </Field>
             </div>
           </CardContent>
