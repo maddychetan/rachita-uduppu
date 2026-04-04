@@ -250,11 +250,6 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
     };
   }
 
-  const store = getStore("rachita-store");
-
-  // Ensure seed data exists on first request
-  await ensureSeeded(store);
-
   // Parse path: event.path is like /api/products or /api/products/3/variants
   // The splat from netlify.toml gives us the part after /api/
   // In Netlify Functions, the full path comes in event.path
@@ -288,6 +283,12 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
   if (method !== "GET" && !isAuthenticated(event)) {
     return unauthorized("Login required to modify data");
   }
+
+  // ── Store (only needed for data routes below) ─────────────────────────────
+  const store = getStore("rachita-store");
+
+  // Ensure seed data exists on first request
+  await ensureSeeded(store);
 
   let body: Record<string, unknown> = {};
   if (event.body) {
