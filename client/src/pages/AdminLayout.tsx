@@ -1,11 +1,12 @@
 import { Link, useLocation } from "wouter";
-import { LayoutDashboard, Package, Layers, ArrowLeft } from "lucide-react";
+import { LayoutDashboard, Package, Layers, Settings, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 const NAV = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
   { label: "Products", href: "/admin/products", icon: Package },
   { label: "Inventory", href: "/admin/inventory", icon: Layers },
+  { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

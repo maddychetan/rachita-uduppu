@@ -79,6 +79,24 @@ interface NextIds {
   variant: number;
 }
 
+interface SiteSettings {
+  waNumber: string;
+  phone: string;
+  email: string;
+  location: string;
+  aboutLine1: string;
+  aboutLine2: string;
+}
+
+const DEFAULT_SETTINGS: SiteSettings = {
+  waNumber: "917829441004",
+  phone: "+91 78294 41004",
+  email: "hello@rachitauduppu.in",
+  location: "Davangere, Karnataka, India",
+  aboutLine1: "Rachita Uduppu was born from a deep love for India's textile heritage. Based in Davangere, Karnataka, every piece we create bridges centuries-old craft traditions and contemporary style.",
+  aboutLine2: "From Banarasi silk sarees to modern cord sets, we work directly with artisans to bring you garments that are truly one-of-a-kind.",
+};
+
 // ── Seed data ────────────────────────────────────────────────────────────────
 
 function buildSeedData(): { categories: Category[]; products: Product[]; variants: Variant[]; nextIds: NextIds } {
@@ -502,6 +520,20 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
       outOfStockCount,
       categoryCounts,
     });
+  }
+
+  // ── Route: GET /settings ─────────────────────────────────────────────────
+  if (path === "/settings" && method === "GET") {
+    const settings = await getStoreData<SiteSettings>(store, "settings", DEFAULT_SETTINGS);
+    return json(settings);
+  }
+
+  // ── Route: PATCH /settings ────────────────────────────────────────────────
+  if (path === "/settings" && method === "PATCH") {
+    const current = await getStoreData<SiteSettings>(store, "settings", DEFAULT_SETTINGS);
+    const updated: SiteSettings = { ...current, ...body } as SiteSettings;
+    await setStoreData(store, "settings", updated);
+    return json(updated);
   }
 
   // ── Fallback ──────────────────────────────────────────────────────────────

@@ -10,6 +10,7 @@ import AdminLayout from "@/pages/AdminLayout";
 import Dashboard from "@/pages/Dashboard";
 import Products from "@/pages/Products";
 import Inventory from "@/pages/Inventory";
+import SiteSettings from "@/pages/SiteSettings";
 import NotFound from "@/pages/not-found";
 
 function AdminGuard({ children }: { children: React.ReactNode }) {
@@ -80,6 +81,13 @@ function AppRouter() {
           <AdminGuard>
             <AdminLayout>
               <Inventory />
+            </AdminLayout>
+          </AdminGuard>
+        </Route>
+        <Route path="/admin/settings">
+          <AdminGuard>
+            <AdminLayout>
+              <SiteSettings />
             </AdminLayout>
           </AdminGuard>
         </Route>

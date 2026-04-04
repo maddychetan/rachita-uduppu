@@ -7,13 +7,29 @@ import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
 import type { Product, Category, Variant } from "@shared/types";
 
-const WA_NUMBER = "917829441004";
+interface SiteSettings {
+  waNumber: string;
+  phone: string;
+  email: string;
+  location: string;
+  aboutLine1: string;
+  aboutLine2: string;
+}
 
-function waLink(productName?: string) {
+const DEFAULT_SETTINGS: SiteSettings = {
+  waNumber: "917829441004",
+  phone: "+91 78294 41004",
+  email: "hello@rachitauduppu.in",
+  location: "Davangere, Karnataka, India",
+  aboutLine1: "Rachita Uduppu was born from a deep love for India's textile heritage. Based in Davangere, Karnataka, every piece we create bridges centuries-old craft traditions and contemporary style.",
+  aboutLine2: "From Banarasi silk sarees to modern cord sets, we work directly with artisans to bring you garments that are truly one-of-a-kind.",
+};
+
+function waLink(waNumber: string, productName?: string) {
   const msg = productName
     ? `Hello, I'm interested in *${productName}* from Rachita Uduppu. Please share more details.`
     : `Hello, I'd like to know more about your collection at Rachita Uduppu.`;
-  return `https://wa.me/${WA_NUMBER}?text=${encodeURIComponent(msg)}`;
+  return `https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`;
 }
 
 // Social links
@@ -99,6 +115,13 @@ export default function Storefront() {
 
   const { data: products = [] } = useQuery<Product[]>({ queryKey: ["/api/products"] });
   const { data: categories = [] } = useQuery<Category[]>({ queryKey: ["/api/categories"] });
+  const { data: settings = DEFAULT_SETTINGS } = useQuery<SiteSettings>({
+    queryKey: ["/api/settings"],
+    queryFn: async () => {
+      const res = await fetch("/api/settings");
+      return res.json();
+    },
+  });
 
   function toggleTheme() {
     document.documentElement.classList.toggle("dark");
@@ -160,7 +183,7 @@ export default function Storefront() {
           </div>
           <p className="font-body text-white/75 text-base sm:text-lg mb-10 max-w-md mx-auto">Handcrafted sarees, kurtis, cord sets &amp; gowns — each piece a celebration of India's textile heritage.</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href={waLink()} target="_blank" rel="noopener noreferrer">
+            <a href={waLink(settings.waNumber)} target="_blank" rel="noopener noreferrer">
               <Button size="lg" className="font-body font-semibold w-full sm:w-auto" style={{ background: "linear-gradient(135deg, #25d366, #128c7e)", color: "#fff" }}>
                 <WAIcon className="w-5 h-5 mr-2" />
                 WhatsApp to Order
@@ -216,8 +239,8 @@ export default function Storefront() {
               <div className="h-px w-8 bg-amber-500/50" />
               <span className="font-display italic text-sm" style={{ color: "hsl(42 70% 38%)" }}>Crafted with Tradition</span>
             </div>
-            <p className="font-body text-muted-foreground mb-4 leading-relaxed">Rachita Uduppu was born from a deep love for India's textile heritage. Based in Davangere, Karnataka, every piece we create bridges centuries-old craft traditions and contemporary style.</p>
-            <p className="font-body text-muted-foreground leading-relaxed">From Banarasi silk sarees to modern cord sets, we work directly with artisans to bring you garments that are truly one-of-a-kind.</p>
+            <p className="font-body text-muted-foreground mb-4 leading-relaxed">{settings.aboutLine1}</p>
+            <p className="font-body text-muted-foreground leading-relaxed">{settings.aboutLine2}</p>
           </div>
           <div className="grid grid-cols-2 gap-4">
             {[{ label: "Products", value: `${activeProducts.length}+` }, { label: "Artisan Partners", value: "50+" }, { label: "Collections", value: `${categories.length}` }, { label: "Years of Craft", value: "5+" }].map(({ label, value }) => (
@@ -236,7 +259,7 @@ export default function Storefront() {
           <h2 className="font-display text-4xl font-semibold text-foreground mb-3">Get in Touch</h2>
           <p className="font-body text-muted-foreground mb-10">For orders, custom requests, or just to say hello.</p>
           <div className="grid sm:grid-cols-3 gap-6 mb-12">
-            {[{ icon: Phone, label: "Phone", value: "+91 78294 41004" }, { icon: Mail, label: "Email", value: "hello@rachitauduppu.in" }, { icon: MapPin, label: "Location", value: "Davangere, Karnataka, India" }].map(({ icon: Icon, label, value }) => (
+            {[{ icon: Phone, label: "Phone", value: settings.phone }, { icon: Mail, label: "Email", value: settings.email }, { icon: MapPin, label: "Location", value: settings.location }].map(({ icon: Icon, label, value }) => (
               <div key={label} className="bg-card rounded-xl p-6 border border-border">
                 <div className="w-10 h-10 rounded-lg flex items-center justify-center mx-auto mb-3" style={{ background: "hsl(355 72% 32% / 0.1)" }}>
                   <Icon size={20} style={{ color: "hsl(355 72% 32%)" }} />
@@ -284,7 +307,7 @@ export default function Storefront() {
       </footer>
 
       {/* ── Sticky WhatsApp (mobile) ── */}
-      <a href={waLink()} target="_blank" rel="noopener noreferrer" className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 md:hidden flex items-center gap-2 px-5 py-3 rounded-full font-body font-bold text-white text-sm shadow-lg hover:shadow-xl transition-all" style={{ background: "linear-gradient(135deg, #25d366, #128c7e)", boxShadow: "0 6px 24px rgba(37,211,102,0.45)" }}>
+      <a href={waLink(settings.waNumber)} target="_blank" rel="noopener noreferrer" className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 md:hidden flex items-center gap-2 px-5 py-3 rounded-full font-body font-bold text-white text-sm shadow-lg hover:shadow-xl transition-all" style={{ background: "linear-gradient(135deg, #25d366, #128c7e)", boxShadow: "0 6px 24px rgba(37,211,102,0.45)" }}>
         <WAIcon className="w-5 h-5" /> WhatsApp to Order
       </a>
     </div>
@@ -317,7 +340,7 @@ function ProductCard({ product }: { product: Product }) {
           </div>
         )}
         {/* Hover WhatsApp overlay */}
-        <a href={waLink(product.name)} target="_blank" rel="noopener noreferrer"
+        <a href={waLink(settings.waNumber, product.name)} target="_blank" rel="noopener noreferrer"
           className="absolute inset-0 bg-black/0 group-hover:bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
           <span className="flex items-center gap-2 bg-green-500 text-white px-5 py-2.5 rounded-full font-body font-semibold text-sm shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
             <WAIcon className="w-4 h-4" /> Enquire on WhatsApp
@@ -337,7 +360,7 @@ function ProductCard({ product }: { product: Product }) {
               <span className="font-body text-sm text-muted-foreground line-through ml-2">₹{product.comparePrice.toLocaleString("en-IN")}</span>
             )}
           </div>
-          <a href={waLink(product.name)} target="_blank" rel="noopener noreferrer">
+          <a href={waLink(settings.waNumber, product.name)} target="_blank" rel="noopener noreferrer">
             <Button size="sm" className="font-body" style={{ background: "#25d366", color: "#fff" }}>
               <WAIcon className="w-3.5 h-3.5 mr-1" /> Order
             </Button>
