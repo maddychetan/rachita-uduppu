@@ -5,7 +5,7 @@ import * as crypto from "crypto";
 // ── Auth ─────────────────────────────────────────────────────────────────────
 // Password set via ADMIN_PASSWORD environment variable in Netlify.
 // Falls back to "RachitaAdmin2026" if not set.
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "RachitaAdmin2026";
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "Arthi123!@#";
 const TOKEN_SECRET = process.env.TOKEN_SECRET || "rachita-secret-key-change-me";
 
 function createToken(): string {
