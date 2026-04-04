@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { Plus, Pencil, Trash2, Image } from "lucide-react";
+import ImageUploader from "@/components/ImageUploader";
 import type { Product, Category } from "@shared/types";
 
 export default function Products() {
@@ -147,19 +148,22 @@ export default function Products() {
                 <input type="number" className="w-full mt-1 px-3 py-2 border border-border rounded-lg text-sm font-body bg-background" value={form.comparePrice} onChange={e => setForm({ ...form, comparePrice: Number(e.target.value) })} min={0} />
               </div>
             </div>
-            <div>
-              <label className="font-body text-sm font-medium text-foreground">Main Image URL</label>
-              <input className="w-full mt-1 px-3 py-2 border border-border rounded-lg text-sm font-body bg-background" value={form.imageUrl} onChange={e => setForm({ ...form, imageUrl: e.target.value })} placeholder="https://..." />
-            </div>
-            <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="font-body text-sm font-medium text-foreground">Image 2 URL</label>
-                <input className="w-full mt-1 px-3 py-2 border border-border rounded-lg text-sm font-body bg-background" value={form.imageUrl2} onChange={e => setForm({ ...form, imageUrl2: e.target.value })} placeholder="optional" />
-              </div>
-              <div>
-                <label className="font-body text-sm font-medium text-foreground">Image 3 URL</label>
-                <input className="w-full mt-1 px-3 py-2 border border-border rounded-lg text-sm font-body bg-background" value={form.imageUrl3} onChange={e => setForm({ ...form, imageUrl3: e.target.value })} placeholder="optional" />
-              </div>
+            <ImageUploader
+              label="Main Image"
+              value={form.imageUrl}
+              onChange={url => setForm({ ...form, imageUrl: url })}
+            />
+            <div className="grid grid-cols-2 gap-3">
+              <ImageUploader
+                label="Image 2 (optional)"
+                value={form.imageUrl2}
+                onChange={url => setForm({ ...form, imageUrl2: url })}
+              />
+              <ImageUploader
+                label="Image 3 (optional)"
+                value={form.imageUrl3}
+                onChange={url => setForm({ ...form, imageUrl3: url })}
+              />
             </div>
             <div className="flex items-center gap-6">
               <label className="flex items-center gap-2 cursor-pointer">

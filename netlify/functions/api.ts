@@ -522,6 +522,47 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
     });
   }
 
+  // ── Route: POST /upload ───────────────────────────────────────────────────
+  // Accepts: { data: "data:image/jpeg;base64,...", filename: "photo.jpg" }
+  // Returns: { url: "/api/images/<key>" }
+  if (path === "/upload" && method === "POST") {
+    if (!isAuthenticated(event)) return unauthorized("Login required to upload images");
+    const { data: dataUrl, filename } = body as { data?: string; filename?: string };
+    if (!dataUrl || !dataUrl.startsWith("data:image/")) return badRequest("Invalid image data");
+
+    const matches = dataUrl.match(/^data:(image\/[a-zA-Z+]+);base64,(.+)$/);
+    if (!matches) return badRequest("Invalid base64 image");
+    const [, mime, b64] = matches;
+    const ext = mime.split("/")[1].replace("jpeg", "jpg").replace("svg+xml", "svg");
+    const key = `img-${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+    await store.set(key, Buffer.from(b64, "base64"), { metadata: { mime } });
+    return json({ url: `/api/images/${key}` });
+  }
+
+  // ── Route: GET /images/:key ───────────────────────────────────────────────
+  const imgMatch = path.match(/^\/images\/(.+)$/);
+  if (imgMatch && method === "GET") {
+    const key = imgMatch[1];
+    try {
+      const { data, metadata } = await store.getWithMetadata(key, { type: "arrayBuffer" });
+      if (!data) return notFound("Image not found");
+      const mime = (metadata as any)?.mime || "image/jpeg";
+      return {
+        statusCode: 200,
+        headers: {
+          "Content-Type": mime,
+          "Cache-Control": "public, max-age=31536000, immutable",
+          "Access-Control-Allow-Origin": "*",
+        },
+        body: Buffer.from(data as ArrayBuffer).toString("base64"),
+        isBase64Encoded: true,
+      };
+    } catch {
+      return notFound("Image not found");
+    }
+  }
+
   // ── Route: GET /settings ─────────────────────────────────────────────────
   if (path === "/settings" && method === "GET") {
     const settings = await getStoreData<SiteSettings>(store, "settings", DEFAULT_SETTINGS);
