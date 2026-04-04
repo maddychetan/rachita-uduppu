@@ -12,8 +12,21 @@ interface SiteSettings {
   phone: string;
   email: string;
   location: string;
+  heroHeading: string;
+  heroTagline: string;
+  heroDescription: string;
+  aboutTitle: string;
+  aboutSubtitle: string;
   aboutLine1: string;
   aboutLine2: string;
+  statArtisanPartners: string;
+  statYearsOfCraft: string;
+  instagramUrl: string;
+  instagramHandle: string;
+  facebookUrl: string;
+  facebookHandle: string;
+  youtubeUrl: string;
+  youtubeHandle: string;
 }
 
 const DEFAULT_SETTINGS: SiteSettings = {
@@ -21,8 +34,21 @@ const DEFAULT_SETTINGS: SiteSettings = {
   phone: "+91 78294 41004",
   email: "hello@rachitauduppu.in",
   location: "Davangere, Karnataka, India",
+  heroHeading: "Rachita Uduppu",
+  heroTagline: "Crafted with Tradition",
+  heroDescription: "Handcrafted sarees, kurtis, cord sets & gowns — each piece a celebration of India's textile heritage.",
+  aboutTitle: "Woven with Tradition, Worn with Pride",
+  aboutSubtitle: "Crafted with Tradition",
   aboutLine1: "Rachita Uduppu was born from a deep love for India's textile heritage. Based in Davangere, Karnataka, every piece we create bridges centuries-old craft traditions and contemporary style.",
   aboutLine2: "From Banarasi silk sarees to modern cord sets, we work directly with artisans to bring you garments that are truly one-of-a-kind.",
+  statArtisanPartners: "50+",
+  statYearsOfCraft: "5+",
+  instagramUrl: "https://instagram.com/rachitauduppu",
+  instagramHandle: "@rachitauduppu",
+  facebookUrl: "https://facebook.com/rachitauduppu",
+  facebookHandle: "/rachitauduppu",
+  youtubeUrl: "https://youtube.com/@rachitauduppu",
+  youtubeHandle: "/rachitauduppu",
 };
 
 function waLink(waNumber: string, productName?: string) {
@@ -32,27 +58,10 @@ function waLink(waNumber: string, productName?: string) {
   return `https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`;
 }
 
-// Social links
-const SOCIALS = [
-  {
-    name: "Instagram", handle: "@rachitauduppu",
-    url: "https://instagram.com/rachitauduppu",
-    icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>,
-    bg: "from-purple-500 via-pink-500 to-orange-400",
-  },
-  {
-    name: "Facebook", handle: "/rachitauduppu",
-    url: "https://facebook.com/rachitauduppu",
-    icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>,
-    bg: "from-blue-600 to-blue-700",
-  },
-  {
-    name: "YouTube", handle: "/rachitauduppu",
-    url: "https://youtube.com/@rachitauduppu",
-    icon: <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>,
-    bg: "from-red-500 to-red-600",
-  },
-];
+// Social icons (static SVGs, URLs come from settings)
+const IGIcon = () => <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/></svg>;
+const FBIcon = () => <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>;
+const YTIcon = () => <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5"><path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/></svg>;
 
 // ── Bare gold "RU" monogram logo ──
 function RULogo({ size = 120, className = "" }: { size?: number; className?: string }) {
@@ -128,6 +137,12 @@ export default function Storefront() {
     setDark(!dark);
   }
 
+  const SOCIALS = [
+    { name: "Instagram", handle: settings.instagramHandle, url: settings.instagramUrl, icon: <IGIcon />, bg: "from-purple-500 via-pink-500 to-orange-400" },
+    { name: "Facebook",  handle: settings.facebookHandle,  url: settings.facebookUrl,  icon: <FBIcon />, bg: "from-blue-600 to-blue-700" },
+    { name: "YouTube",   handle: settings.youtubeHandle,   url: settings.youtubeUrl,   icon: <YTIcon />, bg: "from-red-500 to-red-600" },
+  ];
+
   const activeProducts = products.filter(p => p.status === "active");
   const featured = activeProducts.filter(p => p.featured);
   const filtered = activeCategory
@@ -175,13 +190,13 @@ export default function Storefront() {
         <div className="absolute inset-0" style={{ background: "linear-gradient(160deg, hsl(355 72% 22% / 0.92) 0%, hsl(0 50% 12% / 0.88) 100%)" }} />
         <div className="relative z-10 text-center px-4 max-w-3xl mx-auto">
           <div className="flex justify-center mb-6"><RULogo size={110} /></div>
-          <h1 className="font-display text-5xl sm:text-7xl font-semibold text-white mb-3 leading-tight tracking-wide" data-testid="hero-heading">Rachita Uduppu</h1>
+          <h1 className="font-display text-5xl sm:text-7xl font-semibold text-white mb-3 leading-tight tracking-wide" data-testid="hero-heading">{settings.heroHeading}</h1>
           <div className="flex items-center justify-center gap-3 mb-8">
             <div className="h-px w-12 bg-gradient-to-r from-transparent to-amber-400/70" />
-            <p className="font-display italic text-amber-300/90 text-lg sm:text-xl tracking-wide">Crafted with Tradition</p>
+            <p className="font-display italic text-amber-300/90 text-lg sm:text-xl tracking-wide">{settings.heroTagline}</p>
             <div className="h-px w-12 bg-gradient-to-l from-transparent to-amber-400/70" />
           </div>
-          <p className="font-body text-white/75 text-base sm:text-lg mb-10 max-w-md mx-auto">Handcrafted sarees, kurtis, cord sets &amp; gowns — each piece a celebration of India's textile heritage.</p>
+          <p className="font-body text-white/75 text-base sm:text-lg mb-10 max-w-md mx-auto">{settings.heroDescription}</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <a href={waLink(settings.waNumber)} target="_blank" rel="noopener noreferrer">
               <Button size="lg" className="font-body font-semibold w-full sm:w-auto" style={{ background: "linear-gradient(135deg, #25d366, #128c7e)", color: "#fff" }}>
@@ -234,16 +249,16 @@ export default function Storefront() {
         <div className="max-w-5xl mx-auto grid md:grid-cols-2 gap-12 items-center">
           <div>
             <span className="font-body text-xs tracking-widest uppercase mb-3 block" style={{ color: "hsl(42 70% 38%)" }}>Our Story</span>
-            <h2 className="font-display text-4xl font-semibold text-foreground mb-2">Woven with Tradition,<br />Worn with Pride</h2>
+            <h2 className="font-display text-4xl font-semibold text-foreground mb-2">{settings.aboutTitle}</h2>
             <div className="flex items-center gap-2 mb-5">
               <div className="h-px w-8 bg-amber-500/50" />
-              <span className="font-display italic text-sm" style={{ color: "hsl(42 70% 38%)" }}>Crafted with Tradition</span>
+              <span className="font-display italic text-sm" style={{ color: "hsl(42 70% 38%)" }}>{settings.aboutSubtitle}</span>
             </div>
             <p className="font-body text-muted-foreground mb-4 leading-relaxed">{settings.aboutLine1}</p>
             <p className="font-body text-muted-foreground leading-relaxed">{settings.aboutLine2}</p>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            {[{ label: "Products", value: `${activeProducts.length}+` }, { label: "Artisan Partners", value: "50+" }, { label: "Collections", value: `${categories.length}` }, { label: "Years of Craft", value: "5+" }].map(({ label, value }) => (
+            {[{ label: "Products", value: `${activeProducts.length}+` }, { label: "Artisan Partners", value: settings.statArtisanPartners }, { label: "Collections", value: `${categories.length}` }, { label: "Years of Craft", value: settings.statYearsOfCraft }].map(({ label, value }) => (
               <div key={label} className="bg-card rounded-xl p-6 text-center border border-border">
                 <p className="font-display text-4xl font-semibold" style={{ color: "hsl(355 72% 32%)" }}>{value}</p>
                 <p className="font-body text-sm text-muted-foreground mt-1">{label}</p>

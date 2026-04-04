@@ -80,12 +80,30 @@ interface NextIds {
 }
 
 interface SiteSettings {
+  // Contact & WhatsApp
   waNumber: string;
   phone: string;
   email: string;
   location: string;
+  // Hero section
+  heroHeading: string;
+  heroTagline: string;
+  heroDescription: string;
+  // About section
+  aboutTitle: string;
+  aboutSubtitle: string;
   aboutLine1: string;
   aboutLine2: string;
+  // Stats
+  statArtisanPartners: string;
+  statYearsOfCraft: string;
+  // Social links
+  instagramUrl: string;
+  instagramHandle: string;
+  facebookUrl: string;
+  facebookHandle: string;
+  youtubeUrl: string;
+  youtubeHandle: string;
 }
 
 const DEFAULT_SETTINGS: SiteSettings = {
@@ -93,8 +111,21 @@ const DEFAULT_SETTINGS: SiteSettings = {
   phone: "+91 78294 41004",
   email: "hello@rachitauduppu.in",
   location: "Davangere, Karnataka, India",
+  heroHeading: "Rachita Uduppu",
+  heroTagline: "Crafted with Tradition",
+  heroDescription: "Handcrafted sarees, kurtis, cord sets & gowns — each piece a celebration of India's textile heritage.",
+  aboutTitle: "Woven with Tradition, Worn with Pride",
+  aboutSubtitle: "Crafted with Tradition",
   aboutLine1: "Rachita Uduppu was born from a deep love for India's textile heritage. Based in Davangere, Karnataka, every piece we create bridges centuries-old craft traditions and contemporary style.",
   aboutLine2: "From Banarasi silk sarees to modern cord sets, we work directly with artisans to bring you garments that are truly one-of-a-kind.",
+  statArtisanPartners: "50+",
+  statYearsOfCraft: "5+",
+  instagramUrl: "https://instagram.com/rachitauduppu",
+  instagramHandle: "@rachitauduppu",
+  facebookUrl: "https://facebook.com/rachitauduppu",
+  facebookHandle: "/rachitauduppu",
+  youtubeUrl: "https://youtube.com/@rachitauduppu",
+  youtubeHandle: "/rachitauduppu",
 };
 
 // ── Seed data ────────────────────────────────────────────────────────────────
