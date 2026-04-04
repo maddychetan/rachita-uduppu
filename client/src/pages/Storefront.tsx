@@ -237,7 +237,7 @@ export default function Storefront() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" data-testid="products-grid">
             {filtered.map(product => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard key={product.id} product={product} waNumber={settings.waNumber} />
             ))}
           </div>
           {filtered.length === 0 && (
@@ -337,7 +337,7 @@ export default function Storefront() {
   );
 }
 
-function ProductCard({ product }: { product: Product }) {
+function ProductCard({ product, waNumber }: { product: Product; waNumber: string }) {
   const imgSrc = product.imageUrl || "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&q=80";
   const discount = product.comparePrice ? Math.round((1 - product.price / product.comparePrice) * 100) : null;
 
@@ -363,7 +363,7 @@ function ProductCard({ product }: { product: Product }) {
           </div>
         )}
         {/* Hover WhatsApp overlay */}
-        <a href={waLink(settings.waNumber, product.name)} target="_blank" rel="noopener noreferrer"
+        <a href={waLink(waNumber, product.name)} target="_blank" rel="noopener noreferrer"
           className="absolute inset-0 bg-black/0 group-hover:bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
           <span className="flex items-center gap-2 bg-green-500 text-white px-5 py-2.5 rounded-full font-body font-semibold text-sm shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
             <WAIcon className="w-4 h-4" /> Enquire on WhatsApp
@@ -383,7 +383,7 @@ function ProductCard({ product }: { product: Product }) {
               <span className="font-body text-sm text-muted-foreground line-through ml-2">₹{product.comparePrice.toLocaleString("en-IN")}</span>
             )}
           </div>
-          <a href={waLink(settings.waNumber, product.name)} target="_blank" rel="noopener noreferrer">
+          <a href={waLink(waNumber, product.name)} target="_blank" rel="noopener noreferrer">
             <Button size="sm" className="font-body" style={{ background: "#25d366", color: "#fff" }}>
               <WAIcon className="w-3.5 h-3.5 mr-1" /> Order
             </Button>
