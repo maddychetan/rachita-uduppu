@@ -1,0 +1,79 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap');
+@import url('https://api.fontshare.com/v2/css?f[]=switzer@400,500,600,700&display=swap');
+
+@layer base {
+  :root {
+    /* Rachita Uduppu — Deep Crimson + Gold */
+    --background: 38 30% 96%;
+    --foreground: 20 10% 12%;
+    --card: 0 0% 100%;
+    --card-foreground: 20 10% 12%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 20 10% 12%;
+    --primary: 355 72% 32%;
+    --primary-foreground: 38 60% 96%;
+    --secondary: 36 20% 92%;
+    --secondary-foreground: 20 10% 20%;
+    --muted: 36 15% 90%;
+    --muted-foreground: 20 5% 45%;
+    --accent: 42 80% 94%;
+    --accent-foreground: 25 80% 12%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 36 15% 87%;
+    --input: 36 15% 87%;
+    --ring: 42 90% 50%;
+    --radius: 0.625rem;
+  }
+
+  .dark {
+    --background: 0 60% 6%;
+    --foreground: 38 20% 90%;
+    --card: 0 40% 9%;
+    --card-foreground: 38 20% 90%;
+    --popover: 0 40% 9%;
+    --popover-foreground: 38 20% 90%;
+    --primary: 42 90% 55%;
+    --primary-foreground: 0 60% 10%;
+    --secondary: 0 30% 14%;
+    --secondary-foreground: 38 20% 85%;
+    --muted: 0 20% 15%;
+    --muted-foreground: 38 10% 55%;
+    --accent: 0 40% 16%;
+    --accent-foreground: 42 80% 75%;
+    --destructive: 0 62% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 0 20% 18%;
+    --input: 0 20% 18%;
+    --ring: 42 90% 50%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+    font-family: 'Switzer', 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .font-display {
+    font-family: 'Cormorant Garamond', Georgia, serif;
+  }
+  .font-body {
+    font-family: 'Switzer', 'Inter', system-ui, sans-serif;
+  }
+}
+
+/* Product card hover zoom */
+.product-card-img {
+  transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.product-card:hover .product-card-img {
+  transform: scale(1.05);
+}
