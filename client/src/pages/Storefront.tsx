@@ -379,6 +379,7 @@ function ProductCard({ product, waNumber }: { product: Product; waNumber: string
         )}
         {/* Hover WhatsApp overlay */}
         <a href={waLink(waNumber, { name: product.name, sku: product.sku, price: product.price, description: product.description || undefined })} target="_blank" rel="noopener noreferrer"
+          onClick={() => (window as any).gtag?.('event', 'whatsapp_enquiry', { product_name: product.name, product_sku: product.sku, value: product.price })}
           className="absolute inset-0 bg-black/0 group-hover:bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
           <span className="flex items-center gap-2 bg-green-500 text-white px-5 py-2.5 rounded-full font-body font-semibold text-sm shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
             <WAIcon className="w-4 h-4" /> Enquire on WhatsApp
@@ -398,7 +399,8 @@ function ProductCard({ product, waNumber }: { product: Product; waNumber: string
               <span className="font-body text-sm text-muted-foreground line-through ml-2">₹{product.comparePrice.toLocaleString("en-IN")}</span>
             )}
           </div>
-          <a href={waLink(waNumber, { name: product.name, sku: product.sku, price: product.price, description: product.description || undefined })} target="_blank" rel="noopener noreferrer">
+          <a href={waLink(waNumber, { name: product.name, sku: product.sku, price: product.price, description: product.description || undefined })} target="_blank" rel="noopener noreferrer"
+            onClick={() => (window as any).gtag?.('event', 'whatsapp_enquiry', { product_name: product.name, product_sku: product.sku, value: product.price })}>
             <Button size="sm" className="font-body" style={{ background: "#25d366", color: "#fff" }}>
               <WAIcon className="w-3.5 h-3.5 mr-1" /> Order
             </Button>
