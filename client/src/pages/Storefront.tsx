@@ -132,9 +132,6 @@ export default function Storefront() {
             <Button variant="ghost" size="icon" onClick={toggleTheme} data-testid="storefront-theme-toggle">
               {dark ? <Sun size={18} /> : <Moon size={18} />}
             </Button>
-            <Link href="/admin">
-              <Button size="sm" variant="outline" className="hidden sm:flex font-body" data-testid="admin-panel-link">Admin</Button>
-            </Link>
             <button className="md:hidden" onClick={() => setMobileMenuOpen(!mobileMenuOpen)} data-testid="mobile-menu-btn">
               {mobileMenuOpen ? <X size={22} /> : <Menu size={22} />}
             </button>
@@ -145,7 +142,6 @@ export default function Storefront() {
             {["collection", "about", "contact"].map(s => (
               <button key={s} onClick={() => { document.getElementById(s)?.scrollIntoView({ behavior: "smooth" }); setMobileMenuOpen(false); }} className="block w-full text-left capitalize text-sm text-muted-foreground hover:text-foreground py-1">{s}</button>
             ))}
-            <Link href="/admin"><Button size="sm" variant="outline" className="w-full font-body">Admin Panel</Button></Link>
           </div>
         )}
       </header>

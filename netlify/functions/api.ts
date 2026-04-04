@@ -1,5 +1,44 @@
 import type { Handler, HandlerEvent, HandlerContext } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
+import * as crypto from "crypto";
+
+// ── Auth ─────────────────────────────────────────────────────────────────────
+// Password set via ADMIN_PASSWORD environment variable in Netlify.
+// Falls back to "RachitaAdmin2026" if not set.
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || "RachitaAdmin2026";
+const TOKEN_SECRET = process.env.TOKEN_SECRET || "rachita-secret-key-change-me";
+
+function createToken(): string {
+  const payload = { ts: Date.now(), r: crypto.randomBytes(8).toString("hex") };
+  const data = Buffer.from(JSON.stringify(payload)).toString("base64url");
+  const sig = crypto.createHmac("sha256", TOKEN_SECRET).update(data).digest("base64url");
+  return `${data}.${sig}`;
+}
+
+function verifyToken(token: string): boolean {
+  const parts = token.split(".");
+  if (parts.length !== 2) return false;
+  const [data, sig] = parts;
+  const expected = crypto.createHmac("sha256", TOKEN_SECRET).update(data).digest("base64url");
+  if (sig !== expected) return false;
+  // Token valid for 24 hours
+  try {
+    const payload = JSON.parse(Buffer.from(data, "base64url").toString());
+    return Date.now() - payload.ts < 24 * 60 * 60 * 1000;
+  } catch {
+    return false;
+  }
+}
+
+function isAuthenticated(event: HandlerEvent): boolean {
+  const auth = event.headers["authorization"] || event.headers["Authorization"] || "";
+  const token = auth.replace(/^Bearer\s+/i, "");
+  return verifyToken(token);
+}
+
+function unauthorized(msg = "Unauthorized") {
+  return json({ error: msg }, 401);
+}
 
 // ── Types ────────────────────────────────────────────────────────────────────
 
@@ -205,7 +244,7 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,POST,PATCH,DELETE,OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
+        "Access-Control-Allow-Headers": "Content-Type, Authorization",
       },
       body: "",
     };
@@ -230,6 +269,26 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
   path = path.replace(/\/$/, "") || "/";
 
   const method = event.httpMethod;
+
+  // ── Auth routes (no store needed) ──────────────────────────────────────────
+  if (path === "/admin/login" && method === "POST") {
+    let loginBody: Record<string, unknown> = {};
+    try { loginBody = JSON.parse(event.body || "{}"); } catch { return badRequest("Invalid JSON"); }
+    if (loginBody.password === ADMIN_PASSWORD) {
+      return json({ token: createToken() });
+    }
+    return json({ error: "Invalid password" }, 401);
+  }
+
+  if (path === "/admin/verify" && method === "GET") {
+    return isAuthenticated(event) ? json({ ok: true }) : unauthorized();
+  }
+
+  // ── Protect all write operations (POST, PATCH, DELETE) ─────────────────────
+  if (method !== "GET" && !isAuthenticated(event)) {
+    return unauthorized("Login required to modify data");
+  }
+
   let body: Record<string, unknown> = {};
   if (event.body) {
     try {
