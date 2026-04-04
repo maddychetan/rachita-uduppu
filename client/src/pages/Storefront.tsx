@@ -28,6 +28,7 @@ interface SiteSettings {
   facebookHandle: string;
   youtubeUrl: string;
   youtubeHandle: string;
+  whatsappCommunityUrl: string;
 }
 
 const DEFAULT_SETTINGS: SiteSettings = {
@@ -51,12 +52,24 @@ const DEFAULT_SETTINGS: SiteSettings = {
   facebookHandle: "/rachitauduppu",
   youtubeUrl: "https://youtube.com/@rachitauduppu",
   youtubeHandle: "/rachitauduppu",
+  whatsappCommunityUrl: "https://chat.whatsapp.com/CFY64aWAw6UHoUW0lMcczz",
 };
 
-function waLink(waNumber: string, productName?: string) {
-  const msg = productName
-    ? `Hello, I'm interested in *${productName}* from Rachita Uduppu. Please share more details.`
-    : `Hello, I'd like to know more about your collection at Rachita Uduppu.`;
+function waLink(waNumber: string, product?: { name: string; sku?: string; price?: number; description?: string } | string) {
+  let msg: string;
+  if (!product) {
+    msg = `Hello, I'd like to know more about your collection at Rachita Uduppu.`;
+  } else if (typeof product === "string") {
+    // legacy: just a name string
+    msg = `Hello! I'm interested in ordering *${product}* from Rachita Uduppu. Please share more details and availability.`;
+  } else {
+    const lines = [`Hello! I'm interested in ordering from *Rachita Uduppu* 🛍️`, ``, `*Product:* ${product.name}`];
+    if (product.sku) lines.push(`*SKU:* ${product.sku}`);
+    if (product.price) lines.push(`*Price:* ₹${product.price.toLocaleString("en-IN")}`);
+    if (product.description) lines.push(`*Details:* ${product.description}`);
+    lines.push(``, `Could you please confirm availability and share payment details? Thank you!`);
+    msg = lines.join("\n");
+  }
   return `https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`;
 }
 
@@ -143,6 +156,7 @@ export default function Storefront() {
     { name: "Instagram", handle: settings.instagramHandle, url: settings.instagramUrl, icon: <IGIcon />, bg: "from-purple-500 via-pink-500 to-orange-400" },
     { name: "Facebook",  handle: settings.facebookHandle,  url: settings.facebookUrl,  icon: <FBIcon />, bg: "from-blue-600 to-blue-700" },
     { name: "YouTube",   handle: settings.youtubeHandle,   url: settings.youtubeUrl,   icon: <YTIcon />, bg: "from-red-500 to-red-600" },
+    { name: "WhatsApp Community", handle: "Join Community", url: settings.whatsappCommunityUrl, icon: <WAIcon className="w-5 h-5" />, bg: "from-green-500 to-green-600" },
   ];
 
   const activeProducts = products.filter(p => p.status === "active");
@@ -363,7 +377,7 @@ function ProductCard({ product, waNumber }: { product: Product; waNumber: string
           </div>
         )}
         {/* Hover WhatsApp overlay */}
-        <a href={waLink(waNumber, product.name)} target="_blank" rel="noopener noreferrer"
+        <a href={waLink(waNumber, { name: product.name, sku: product.sku, price: product.price, description: product.description || undefined })} target="_blank" rel="noopener noreferrer"
           className="absolute inset-0 bg-black/0 group-hover:bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
           <span className="flex items-center gap-2 bg-green-500 text-white px-5 py-2.5 rounded-full font-body font-semibold text-sm shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
             <WAIcon className="w-4 h-4" /> Enquire on WhatsApp
@@ -383,7 +397,7 @@ function ProductCard({ product, waNumber }: { product: Product; waNumber: string
               <span className="font-body text-sm text-muted-foreground line-through ml-2">₹{product.comparePrice.toLocaleString("en-IN")}</span>
             )}
           </div>
-          <a href={waLink(waNumber, product.name)} target="_blank" rel="noopener noreferrer">
+          <a href={waLink(waNumber, { name: product.name, sku: product.sku, price: product.price, description: product.description || undefined })} target="_blank" rel="noopener noreferrer">
             <Button size="sm" className="font-body" style={{ background: "#25d366", color: "#fff" }}>
               <WAIcon className="w-3.5 h-3.5 mr-1" /> Order
             </Button>

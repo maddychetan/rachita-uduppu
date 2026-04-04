@@ -32,6 +32,7 @@ export interface SiteSettings {
   facebookHandle: string;
   youtubeUrl: string;
   youtubeHandle: string;
+  whatsappCommunityUrl: string;
 }
 
 const DEFAULT: SiteSettings = {
@@ -55,6 +56,7 @@ const DEFAULT: SiteSettings = {
   facebookHandle: "/rachitauduppu",
   youtubeUrl: "https://youtube.com/@rachitauduppu",
   youtubeHandle: "/rachitauduppu",
+  whatsappCommunityUrl: "https://chat.whatsapp.com/CFY64aWAw6UHoUW0lMcczz",
 };
 
 function Field({ label, hint, children }: { label: string; hint?: string; children: React.ReactNode }) {
@@ -284,6 +286,15 @@ export default function SiteSettings() {
                   <Input value={form.youtubeHandle} onChange={e => set("youtubeHandle", e.target.value)} placeholder="/rachitauduppu" />
                 </Field>
               </div>
+            </div>
+            {/* WhatsApp Community */}
+            <div className="space-y-3">
+              <p className="font-body text-xs font-semibold text-muted-foreground uppercase tracking-wide flex items-center gap-1.5">
+                <span className="w-4 h-4 rounded bg-green-500 inline-block" /> WhatsApp Community
+              </p>
+              <Field label="Community Invite Link">
+                <Input value={form.whatsappCommunityUrl} onChange={e => set("whatsappCommunityUrl", e.target.value)} placeholder="https://chat.whatsapp.com/..." />
+              </Field>
             </div>
           </CardContent>
         </Card>

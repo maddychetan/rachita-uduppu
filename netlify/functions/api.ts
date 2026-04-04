@@ -105,6 +105,7 @@ interface SiteSettings {
   facebookHandle: string;
   youtubeUrl: string;
   youtubeHandle: string;
+  whatsappCommunityUrl: string;
 }
 
 const DEFAULT_SETTINGS: SiteSettings = {
