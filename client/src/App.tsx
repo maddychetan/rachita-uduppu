@@ -11,6 +11,7 @@ import Dashboard from "@/pages/Dashboard";
 import Products from "@/pages/Products";
 import Inventory from "@/pages/Inventory";
 import SiteSettings from "@/pages/SiteSettings";
+import Categories from "@/pages/Categories";
 import NotFound from "@/pages/not-found";
 
 function AdminGuard({ children }: { children: React.ReactNode }) {
@@ -81,6 +82,13 @@ function AppRouter() {
           <AdminGuard>
             <AdminLayout>
               <Inventory />
+            </AdminLayout>
+          </AdminGuard>
+        </Route>
+        <Route path="/admin/categories">
+          <AdminGuard>
+            <AdminLayout>
+              <Categories />
             </AdminLayout>
           </AdminGuard>
         </Route>
