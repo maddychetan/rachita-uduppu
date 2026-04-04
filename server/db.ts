@@ -4,7 +4,7 @@ import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DB_PATH = process.env.DB_PATH || 
-  (process.env.NODE_ENV === "production" ? "/data/rachita.db" : path.join(__dirname, "..", "data", "rachita.db"));
+  path.join(__dirname, "..", "data", "rachita.db");
 
 // Ensure data directory exists
 import fs from "fs";

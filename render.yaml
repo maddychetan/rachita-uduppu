@@ -10,7 +10,3 @@ services:
         value: production
       - key: ADMIN_PASSWORD
         value: Arthi123!@#
-    disk:
-      name: data
-      mountPath: /data
-      sizeGB: 1
