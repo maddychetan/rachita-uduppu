@@ -70,7 +70,8 @@ function waLink(waNumber: string, product?: { name: string; sku?: string; price?
     lines.push(``, `Could you please confirm availability and share payment details? Thank you!`);
     msg = lines.join("\n");
   }
-  return `https://wa.me/${waNumber}?text=${encodeURIComponent(msg)}`;
+  const cleanNumber = waNumber.replace(/\D/g, ""); // strip all non-digits
+  return `https://wa.me/${cleanNumber}?text=${encodeURIComponent(msg)}`;
 }
 
 // Social icons (static SVGs, URLs come from settings)
