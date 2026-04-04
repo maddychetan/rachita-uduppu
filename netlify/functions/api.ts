@@ -1,4 +1,4 @@
-import type { Handler, HandlerEvent, HandlerContext } from "@netlify/functions";
+import type { Context } from "@netlify/functions";
 import { getStore } from "@netlify/blobs";
 import * as crypto from "crypto";
 
@@ -30,8 +30,8 @@ function verifyToken(token: string): boolean {
   }
 }
 
-function isAuthenticated(event: HandlerEvent): boolean {
-  const auth = event.headers["authorization"] || event.headers["Authorization"] || "";
+function isAuthenticated(req: Request): boolean {
+  const auth = req.headers.get("authorization") || "";
   const token = auth.replace(/^Bearer\s+/i, "");
   return verifyToken(token);
 }
@@ -128,7 +128,7 @@ const DEFAULT_SETTINGS: SiteSettings = {
   facebookHandle: "/rachitauduppu",
   youtubeUrl: "https://youtube.com/@rachitauduppu",
   youtubeHandle: "/rachitauduppu",
-};
+}
 
 // ── Seed data ────────────────────────────────────────────────────────────────
 
@@ -270,11 +270,10 @@ async function ensureSeeded(store: ReturnType<typeof getStore>): Promise<void> {
 // ── Response helpers ──────────────────────────────────────────────────────────
 
 function json(data: unknown, status = 200) {
-  return {
-    statusCode: status,
+  return new Response(JSON.stringify(data), {
+    status,
     headers: { "Content-Type": "application/json", "Access-Control-Allow-Origin": "*" },
-    body: JSON.stringify(data),
-  };
+  });
 }
 
 function notFound(msg = "Not found") {
@@ -287,24 +286,21 @@ function badRequest(msg = "Bad request") {
 
 // ── Main handler ──────────────────────────────────────────────────────────────
 
-export const handler: Handler = async (event: HandlerEvent, _context: HandlerContext) => {
+export default async function handler(req: Request, context: Context) {
   // Handle CORS preflight
-  if (event.httpMethod === "OPTIONS") {
-    return {
-      statusCode: 204,
+  if (req.method === "OPTIONS") {
+    return new Response(null, {
+      status: 204,
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET,POST,PATCH,DELETE,OPTIONS",
         "Access-Control-Allow-Headers": "Content-Type, Authorization",
       },
-      body: "",
-    };
+    });
   }
 
-  // Parse path: event.path is like /api/products or /api/products/3/variants
-  // The splat from netlify.toml gives us the part after /api/
-  // In Netlify Functions, the full path comes in event.path
-  const rawPath = event.path || "";
+  const url = new URL(req.url);
+  const rawPath = url.pathname;
 
   // Strip /.netlify/functions/api prefix if present (local dev) or /api prefix
   let path = rawPath
@@ -314,12 +310,12 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
   // Remove trailing slash
   path = path.replace(/\/$/, "") || "/";
 
-  const method = event.httpMethod;
+  const method = req.method;
 
   // ── Auth routes (no store needed) ──────────────────────────────────────────
   if (path === "/admin/login" && method === "POST") {
     let loginBody: Record<string, unknown> = {};
-    try { loginBody = JSON.parse(event.body || "{}"); } catch { return badRequest("Invalid JSON"); }
+    try { loginBody = await req.json(); } catch { return badRequest("Invalid JSON"); }
     if (loginBody.password === ADMIN_PASSWORD) {
       return json({ token: createToken() });
     }
@@ -327,11 +323,11 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
   }
 
   if (path === "/admin/verify" && method === "GET") {
-    return isAuthenticated(event) ? json({ ok: true }) : unauthorized();
+    return isAuthenticated(req) ? json({ ok: true }) : unauthorized();
   }
 
   // ── Protect all write operations (POST, PATCH, DELETE) ─────────────────────
-  if (method !== "GET" && !isAuthenticated(event)) {
+  if (method !== "GET" && !isAuthenticated(req)) {
     return unauthorized("Login required to modify data");
   }
 
@@ -342,9 +338,10 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
   await ensureSeeded(store);
 
   let body: Record<string, unknown> = {};
-  if (event.body) {
+  const contentType = req.headers.get("content-type") || "";
+  if (contentType.includes("application/json")) {
     try {
-      body = JSON.parse(event.body);
+      body = await req.clone().json();
     } catch {
       return badRequest("Invalid JSON body");
     }
@@ -559,7 +556,7 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
   // Accepts: { data: "data:image/jpeg;base64,...", filename: "photo.jpg" }
   // Returns: { url: "/api/images/<key>" }
   if (path === "/upload" && method === "POST") {
-    if (!isAuthenticated(event)) return unauthorized("Login required to upload images");
+    if (!isAuthenticated(req)) return unauthorized("Login required to upload images");
     const { data: dataUrl, filename } = body as { data?: string; filename?: string };
     if (!dataUrl || !dataUrl.startsWith("data:image/")) return badRequest("Invalid image data");
 
@@ -581,16 +578,14 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
       const { data, metadata } = await store.getWithMetadata(key, { type: "arrayBuffer" });
       if (!data) return notFound("Image not found");
       const mime = (metadata as any)?.mime || "image/jpeg";
-      return {
-        statusCode: 200,
+      return new Response(data as ArrayBuffer, {
+        status: 200,
         headers: {
           "Content-Type": mime,
           "Cache-Control": "public, max-age=31536000, immutable",
           "Access-Control-Allow-Origin": "*",
         },
-        body: Buffer.from(data as ArrayBuffer).toString("base64"),
-        isBase64Encoded: true,
-      };
+      });
     } catch {
       return notFound("Image not found");
     }
@@ -612,4 +607,4 @@ export const handler: Handler = async (event: HandlerEvent, _context: HandlerCon
 
   // ── Fallback ──────────────────────────────────────────────────────────────
   return json({ error: `No route found: ${method} ${path}` }, 404);
-};
+}
