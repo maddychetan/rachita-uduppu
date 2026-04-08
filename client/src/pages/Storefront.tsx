@@ -1,6 +1,17 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "wouter";
+import {
+  initStorefrontSession,
+  trackNavClick,
+  trackCTAClick,
+  trackSocialClick,
+  trackCategoryFilter,
+  trackProductView,
+  trackWhatsAppEnquiry,
+  trackThemeToggle,
+  trackSectionView,
+} from "@/lib/analytics";
 import { ShoppingBag, ArrowRight, Phone, Mail, MapPin, Menu, X, Moon, Sun, MessageCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -148,9 +159,37 @@ export default function Storefront() {
     },
   });
 
+  // ── Analytics: init session on mount ──
+  useEffect(() => {
+    initStorefrontSession();
+  }, []);
+
+  // ── Analytics: track section visibility via IntersectionObserver ──
+  const trackedSections = useRef(new Set<string>());
+  useEffect(() => {
+    const sectionIds = ["hero", "collection", "about", "contact"];
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !trackedSections.current.has(entry.target.id)) {
+            trackedSections.current.add(entry.target.id);
+            trackSectionView(entry.target.id);
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+    sectionIds.forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) observer.observe(el);
+    });
+    return () => observer.disconnect();
+  }, []);
+
   function toggleTheme() {
     document.documentElement.classList.toggle("dark");
     setDark(!dark);
+    trackThemeToggle(!dark ? "dark" : "light");
   }
 
   const SOCIALS = [
@@ -180,7 +219,7 @@ export default function Storefront() {
           </button>
           <nav className="hidden md:flex items-center gap-8 text-sm font-body text-muted-foreground">
             {["collection", "about", "contact"].map(s => (
-              <button key={s} onClick={() => document.getElementById(s)?.scrollIntoView({ behavior: "smooth" })} className="capitalize hover:text-foreground transition-colors">{s}</button>
+              <button key={s} onClick={() => { document.getElementById(s)?.scrollIntoView({ behavior: "smooth" }); trackNavClick(s); }} className="capitalize hover:text-foreground transition-colors">{s}</button>
             ))}
           </nav>
           <div className="flex items-center gap-2">
@@ -195,7 +234,7 @@ export default function Storefront() {
         {mobileMenuOpen && (
           <div className="md:hidden border-t border-border bg-card px-4 py-4 space-y-3">
             {["collection", "about", "contact"].map(s => (
-              <button key={s} onClick={() => { document.getElementById(s)?.scrollIntoView({ behavior: "smooth" }); setMobileMenuOpen(false); }} className="block w-full text-left capitalize text-sm text-muted-foreground hover:text-foreground py-1">{s}</button>
+              <button key={s} onClick={() => { document.getElementById(s)?.scrollIntoView({ behavior: "smooth" }); setMobileMenuOpen(false); trackNavClick(s); }} className="block w-full text-left capitalize text-sm text-muted-foreground hover:text-foreground py-1">{s}</button>
             ))}
           </div>
         )}
@@ -215,20 +254,20 @@ export default function Storefront() {
           </div>
           <p className="font-body text-white/75 text-base sm:text-lg mb-10 max-w-md mx-auto">{settings.heroDescription}</p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <a href={waLink(settings.waNumber)} target="_blank" rel="noopener noreferrer">
+            <a href={waLink(settings.waNumber)} target="_blank" rel="noopener noreferrer" onClick={() => trackCTAClick("whatsapp_order", "hero")}>
               <Button size="lg" className="font-body font-semibold w-full sm:w-auto" style={{ background: "linear-gradient(135deg, #25d366, #128c7e)", color: "#fff" }}>
                 <WAIcon className="w-5 h-5 mr-2" />
                 WhatsApp to Order
               </Button>
             </a>
             <Button size="lg" variant="outline" className="border-white/40 text-white hover:bg-white/10 font-body"
-              onClick={() => document.getElementById("collection")?.scrollIntoView({ behavior: "smooth" })}>
+              onClick={() => { document.getElementById("collection")?.scrollIntoView({ behavior: "smooth" }); trackCTAClick("view_collection", "hero"); }}>
               View Collection <ArrowRight size={16} className="ml-2" />
             </Button>
           </div>
           <div className="flex items-center justify-center gap-5 mt-10">
             {SOCIALS.map(s => (
-              <a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center gap-1.5" aria-label={s.name}>
+              <a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center gap-1.5" aria-label={s.name} onClick={() => trackSocialClick(s.name.toLowerCase())}>
                 <div className={`w-10 h-10 rounded-xl bg-gradient-to-br ${s.bg} flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform`}>{s.icon}</div>
                 <span className="font-body text-white/60 text-xs group-hover:text-white/90 transition-colors">{s.handle}</span>
               </a>
@@ -245,9 +284,9 @@ export default function Storefront() {
             <p className="font-body text-muted-foreground max-w-md mx-auto">Browse our handcrafted pieces — tap any product to enquire on WhatsApp.</p>
           </div>
           <div className="flex flex-wrap gap-2 justify-center mb-10" data-testid="category-filter">
-            <button onClick={() => setActiveCategory(null)} className={`px-4 py-2 rounded-full text-sm font-body font-medium transition-colors border ${activeCategory === null ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:text-foreground"}`}>All</button>
+            <button onClick={() => { setActiveCategory(null); trackCategoryFilter("all"); }} className={`px-4 py-2 rounded-full text-sm font-body font-medium transition-colors border ${activeCategory === null ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:text-foreground"}`}>All</button>
             {categories.map(cat => (
-              <button key={cat.id} onClick={() => setActiveCategory(cat.id)} className={`px-4 py-2 rounded-full text-sm font-body font-medium transition-colors border ${activeCategory === cat.id ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:text-foreground"}`}>{cat.name}</button>
+              <button key={cat.id} onClick={() => { setActiveCategory(cat.id); trackCategoryFilter(cat.name); }} className={`px-4 py-2 rounded-full text-sm font-body font-medium transition-colors border ${activeCategory === cat.id ? "bg-primary text-primary-foreground border-primary" : "border-border text-muted-foreground hover:text-foreground"}`}>{cat.name}</button>
             ))}
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" data-testid="products-grid">
@@ -309,7 +348,7 @@ export default function Storefront() {
           </div>
           <div className="flex items-center justify-center gap-6">
             {SOCIALS.map(s => (
-              <a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center gap-2" aria-label={s.name}>
+              <a key={s.name} href={s.url} target="_blank" rel="noopener noreferrer" className="group flex flex-col items-center gap-2" aria-label={s.name} onClick={() => trackSocialClick(s.name.toLowerCase())}>
                 <div className={`w-14 h-14 rounded-2xl bg-gradient-to-br ${s.bg} flex items-center justify-center text-white shadow-md group-hover:scale-105 group-hover:shadow-lg transition-all`}>
                   <span className="scale-125">{s.icon}</span>
                 </div>
@@ -345,7 +384,7 @@ export default function Storefront() {
       </footer>
 
       {/* ── Sticky WhatsApp (mobile) ── */}
-      <a href={waLink(settings.waNumber)} target="_blank" rel="noopener noreferrer" className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 md:hidden flex items-center gap-2 px-5 py-3 rounded-full font-body font-bold text-white text-sm shadow-lg hover:shadow-xl transition-all" style={{ background: "linear-gradient(135deg, #25d366, #128c7e)", boxShadow: "0 6px 24px rgba(37,211,102,0.45)" }}>
+      <a href={waLink(settings.waNumber)} target="_blank" rel="noopener noreferrer" onClick={() => trackCTAClick("whatsapp_order", "sticky_mobile")} className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 md:hidden flex items-center gap-2 px-5 py-3 rounded-full font-body font-bold text-white text-sm shadow-lg hover:shadow-xl transition-all" style={{ background: "linear-gradient(135deg, #25d366, #128c7e)", boxShadow: "0 6px 24px rgba(37,211,102,0.45)" }}>
         <WAIcon className="w-5 h-5" /> WhatsApp to Order
       </a>
     </div>
@@ -355,6 +394,8 @@ export default function Storefront() {
 function ProductCard({ product, waNumber }: { product: Product; waNumber: string }) {
   const imgSrc = product.imageUrl || "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&q=80";
   const discount = product.comparePrice ? Math.round((1 - product.price / product.comparePrice) * 100) : null;
+  const cardRef = useRef<HTMLDivElement>(null);
+  const viewTracked = useRef(false);
 
   // Fetch variants for stock info
   const { data: variantList = [] } = useQuery<Variant[]>({ queryKey: ["/api/products", product.id, "variants"], queryFn: async () => {
@@ -365,8 +406,29 @@ function ProductCard({ product, waNumber }: { product: Product; waNumber: string
   const totalStock = variantList.reduce((s, v) => s + v.stock, 0);
   const inStock = totalStock > 0;
 
+  // Track when product card scrolls into view
+  useEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !viewTracked.current) {
+          viewTracked.current = true;
+          trackProductView(product.name, product.sku, product.price);
+        }
+      },
+      { threshold: 0.5 }
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [product.name, product.sku, product.price]);
+
+  const handleWhatsAppClick = () => {
+    trackWhatsAppEnquiry(product.name, product.sku, product.price);
+  };
+
   return (
-    <Card className="product-card overflow-hidden border-border group" data-testid={`product-card-${product.id}`}>
+    <Card ref={cardRef} className="product-card overflow-hidden border-border group" data-testid={`product-card-${product.id}`}>
       <div className="overflow-hidden aspect-[3/4] bg-muted relative">
         <img src={imgSrc} alt={product.name} className="w-full h-full object-cover product-card-img" />
         {discount && (
@@ -379,7 +441,7 @@ function ProductCard({ product, waNumber }: { product: Product; waNumber: string
         )}
         {/* Hover WhatsApp overlay */}
         <a href={waLink(waNumber, { name: product.name, sku: product.sku, price: product.price, description: product.description || undefined })} target="_blank" rel="noopener noreferrer"
-          onClick={() => (window as any).gtag?.('event', 'whatsapp_enquiry', { product_name: product.name, product_sku: product.sku, value: product.price })}
+          onClick={handleWhatsAppClick}
           className="absolute inset-0 bg-black/0 group-hover:bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
           <span className="flex items-center gap-2 bg-green-500 text-white px-5 py-2.5 rounded-full font-body font-semibold text-sm shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
             <WAIcon className="w-4 h-4" /> Enquire on WhatsApp
@@ -400,7 +462,7 @@ function ProductCard({ product, waNumber }: { product: Product; waNumber: string
             )}
           </div>
           <a href={waLink(waNumber, { name: product.name, sku: product.sku, price: product.price, description: product.description || undefined })} target="_blank" rel="noopener noreferrer"
-            onClick={() => (window as any).gtag?.('event', 'whatsapp_enquiry', { product_name: product.name, product_sku: product.sku, value: product.price })}>
+            onClick={handleWhatsAppClick}>
             <Button size="sm" className="font-body" style={{ background: "#25d366", color: "#fff" }}>
               <WAIcon className="w-3.5 h-3.5 mr-1" /> Order
             </Button>

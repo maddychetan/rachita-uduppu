@@ -1,6 +1,8 @@
+import { useEffect } from "react";
 import { Link, useLocation } from "wouter";
 import { LayoutDashboard, Package, Layers, Tag, Settings, ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { initAdminSession, trackPageView } from "@/lib/analytics";
 
 const NAV = [
   { label: "Dashboard", href: "/admin", icon: LayoutDashboard },
@@ -12,6 +14,16 @@ const NAV = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
+
+  // Analytics: tag as admin session on mount
+  useEffect(() => {
+    initAdminSession();
+  }, []);
+
+  // Analytics: track admin page navigation
+  useEffect(() => {
+    trackPageView(location, `Admin — ${location}`);
+  }, [location]);
 
   return (
     <div className="min-h-screen bg-background flex" data-testid="admin-layout">
