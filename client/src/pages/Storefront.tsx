@@ -377,7 +377,7 @@ export default function Storefront() {
             ))}
           </div>
           <div className="flex items-center gap-4">
-            <p className="font-body text-xs text-muted-foreground">© 2025 Rachita Uduppu. All rights reserved.</p>
+            <p className="font-body text-xs text-muted-foreground">© 2026 Rachita Uduppu. All rights reserved.</p>
             <Link href="/admin"><Button variant="ghost" size="sm" className="font-body text-xs text-muted-foreground">Admin →</Button></Link>
           </div>
         </div>
