@@ -180,11 +180,6 @@ function VariantTable({ product, onAdd, onEdit, onDelete }: {
                   <td className="py-2.5 px-2 text-center">
                     {v.stock === 0 ? (
                       <Badge variant="destructive" className="text-xs font-body">Out of Stock</Badge>
-                    ) : v.stock <= 3 ? (
-                      <span className="flex items-center justify-center gap-1">
-                        <AlertTriangle size={13} className="text-orange-500" />
-                        <span className="text-orange-600 font-semibold">{v.stock}</span>
-                      </span>
                     ) : (
                       <span className="font-semibold text-foreground">{v.stock}</span>
                     )}

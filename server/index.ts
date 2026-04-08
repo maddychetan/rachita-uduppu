@@ -247,7 +247,7 @@ app.get("/api/dashboard", async (_req, res) => {
     const cats = catsRes.rows as any[];
 
     const totalStock = vars.reduce((s: number, v: any) => s + Number(v.stock), 0);
-    const lowStockCount = vars.filter((v: any) => Number(v.stock) > 0 && Number(v.stock) <= 3).length;
+    const lowStockCount = 0;
     const outOfStockCount = vars.filter((v: any) => Number(v.stock) === 0).length;
 
     const categoryCounts = cats.map((c: any) => ({

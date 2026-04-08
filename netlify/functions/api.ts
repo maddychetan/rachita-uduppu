@@ -534,7 +534,7 @@ export default async function handler(req: Request, context: Context) {
 
     const activeProducts = prods.filter(p => p.status === "active");
     const totalStock = vars.reduce((s, v) => s + v.stock, 0);
-    const lowStockCount = vars.filter(v => v.stock > 0 && v.stock <= 3).length;
+    const lowStockCount = 0;
     const outOfStockCount = vars.filter(v => v.stock === 0).length;
 
     const categoryCounts = cats
