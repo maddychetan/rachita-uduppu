@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { Link, useLocation } from "wouter";
-import { LayoutDashboard, Package, Layers, Tag, Settings, ArrowLeft } from "lucide-react";
+import { LayoutDashboard, Package, Layers, Tag, Settings, ArrowLeft, FileSpreadsheet } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { initAdminSession, trackPageView } from "@/lib/analytics";
 
@@ -9,6 +9,7 @@ const NAV = [
   { label: "Products", href: "/admin/products", icon: Package },
   { label: "Categories", href: "/admin/categories", icon: Tag },
   { label: "Inventory", href: "/admin/inventory", icon: Layers },
+  { label: "Stock Report", href: "/admin/stock-report", icon: FileSpreadsheet },
   { label: "Settings", href: "/admin/settings", icon: Settings },
 ];
 
