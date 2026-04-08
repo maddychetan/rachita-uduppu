@@ -16,6 +16,7 @@ import { ShoppingBag, ArrowRight, Phone, Mail, MapPin, Menu, X, Moon, Sun, Messa
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card } from "@/components/ui/card";
+import ProductModal from "@/components/ProductModal";
 import type { Product, Category, Variant } from "@shared/types";
 
 interface SiteSettings {
@@ -148,6 +149,7 @@ export default function Storefront() {
   const [dark, setDark] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeCategory, setActiveCategory] = useState<number | null>(null);
+  const [modalProduct, setModalProduct] = useState<Product | null>(null);
 
   const { data: products = [] } = useQuery<Product[]>({ queryKey: ["/api/products"] });
   const { data: categories = [] } = useQuery<Category[]>({ queryKey: ["/api/categories"] });
@@ -291,7 +293,7 @@ export default function Storefront() {
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6" data-testid="products-grid">
             {filtered.map(product => (
-              <ProductCard key={product.id} product={product} waNumber={settings.waNumber} />
+              <ProductCard key={product.id} product={product} waNumber={settings.waNumber} onOpen={() => setModalProduct(product)} />
             ))}
           </div>
           {filtered.length === 0 && (
@@ -387,11 +389,20 @@ export default function Storefront() {
       <a href={waLink(settings.waNumber)} target="_blank" rel="noopener noreferrer" onClick={() => trackCTAClick("whatsapp_order", "sticky_mobile")} className="fixed bottom-5 left-1/2 -translate-x-1/2 z-50 md:hidden flex items-center gap-2 px-5 py-3 rounded-full font-body font-bold text-white text-sm shadow-lg hover:shadow-xl transition-all" style={{ background: "linear-gradient(135deg, #25d366, #128c7e)", boxShadow: "0 6px 24px rgba(37,211,102,0.45)" }}>
         <WAIcon className="w-5 h-5" /> WhatsApp to Order
       </a>
+
+      {/* ── Product Detail Modal ── */}
+      {modalProduct && (
+        <ProductModal
+          product={modalProduct}
+          waNumber={settings.waNumber}
+          onClose={() => setModalProduct(null)}
+        />
+      )}
     </div>
   );
 }
 
-function ProductCard({ product, waNumber }: { product: Product; waNumber: string }) {
+function ProductCard({ product, waNumber, onOpen }: { product: Product; waNumber: string; onOpen: () => void }) {
   const imgSrc = product.imageUrl || "https://images.unsplash.com/photo-1610030469983-98e550d6193c?w=600&q=80";
   const discount = product.comparePrice ? Math.round((1 - product.price / product.comparePrice) * 100) : null;
   const cardRef = useRef<HTMLDivElement>(null);
@@ -428,7 +439,7 @@ function ProductCard({ product, waNumber }: { product: Product; waNumber: string
   };
 
   return (
-    <Card ref={cardRef} className="product-card overflow-hidden border-border group" data-testid={`product-card-${product.id}`}>
+    <Card ref={cardRef} className="product-card overflow-hidden border-border group cursor-pointer" data-testid={`product-card-${product.id}`} onClick={onOpen}>
       <div className="overflow-hidden aspect-[3/4] bg-muted relative">
         <img src={imgSrc} alt={product.name} className="w-full h-full object-cover product-card-img" />
         {discount && (
@@ -439,14 +450,12 @@ function ProductCard({ product, waNumber }: { product: Product; waNumber: string
             <span className="font-body font-semibold text-white text-sm bg-black/60 px-4 py-2 rounded-full">Out of Stock</span>
           </div>
         )}
-        {/* Hover WhatsApp overlay */}
-        <a href={waLink(waNumber, { name: product.name, sku: product.sku, price: product.price, description: product.description || undefined })} target="_blank" rel="noopener noreferrer"
-          onClick={handleWhatsAppClick}
-          className="absolute inset-0 bg-black/0 group-hover:bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-          <span className="flex items-center gap-2 bg-green-500 text-white px-5 py-2.5 rounded-full font-body font-semibold text-sm shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-            <WAIcon className="w-4 h-4" /> Enquire on WhatsApp
+        {/* Hover overlay — View Details */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 pointer-events-none">
+          <span className="flex items-center gap-2 bg-white text-foreground px-5 py-2.5 rounded-full font-body font-semibold text-sm shadow-lg transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
+            View Details
           </span>
-        </a>
+        </div>
       </div>
       <div className="p-4">
         <p className="font-body text-xs text-muted-foreground mb-1 uppercase tracking-wide">{product.sku}</p>
@@ -462,7 +471,7 @@ function ProductCard({ product, waNumber }: { product: Product; waNumber: string
             )}
           </div>
           <a href={waLink(waNumber, { name: product.name, sku: product.sku, price: product.price, description: product.description || undefined })} target="_blank" rel="noopener noreferrer"
-            onClick={handleWhatsAppClick}>
+            onClick={(e) => { e.stopPropagation(); handleWhatsAppClick(); }}>
             <Button size="sm" className="font-body" style={{ background: "#25d366", color: "#fff" }}>
               <WAIcon className="w-3.5 h-3.5 mr-1" /> Order
             </Button>
